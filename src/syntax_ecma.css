@@ -63,3 +63,9 @@
 .Ecma .keyword::after {
   content: " "
 }
+.Ecma .this .keyword::before {
+  content: ""
+}
+.Ecma .this .keyword::after {
+  content: ""
+}

@@ -1,18 +1,19 @@
 const AST_SIGNATURES = {
-  AstBegin:       [],
-  AstString:      ['value'],
-  AstSymbol:      ['value'],
-  AstCall:        ['receiver', 'message', 'args'],
-  AstClass:       ['constant', 'superclass', 'body'],
-  AstModule:      ['constant', 'body'],
-  AstConstant:    ['namespace', 'name'],
-  AstDef:         ['receiver', 'message', 'params', 'body'],
-  AstAssign:      ['lhs', 'rhs'],
-  AstInstanceVar: ['name'],
-  AstLocalVar:    ['name'],
-  AstCase:        ['condition', 'whenClauses'], // should technically have an ELSE clause, too, but it's not part of my example
-  AstCaseWhen:    ['condition', 'body'],
-  AstImport:      ['name', 'location'],
+  AstBegin:        [],
+  AstString:       ['value'],
+  AstSymbol:       ['value'],
+  AstCall:         ['receiver', 'message', 'args'],
+  AstClass:        ['constant', 'superclass', 'body'],
+  AstModule:       ['constant', 'body'],
+  AstConstant:     ['namespace', 'name'],
+  AstDef:          ['receiver', 'message', 'params', 'body'],
+  AstAssign:       ['lhs', 'rhs'],
+  AstInstanceVar:  ['name'],
+  AstLocalVar:     ['name'],
+  AstCase:         ['condition', 'whenClauses'], // should technically have an ELSE clause, too, but it's not part of my example
+  AstCaseWhen:     ['condition', 'body'],
+  AstImport:       ['name', 'location'],
+  AstCrntInstance: [],
 }
 
 const Ast = {}

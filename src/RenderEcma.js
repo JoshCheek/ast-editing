@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import Ast from './Ast.js'
 import './syntax_ecma.css'
 
 class Kw extends Component {
@@ -63,7 +64,12 @@ class RenderEcma extends Component {
   }
 
   renderAstSymbol(ast, classes, key) {
-    return this.renderAstString(ast, classes, key)
+    const symbol = Ast.AstCall(
+      Ast.AstConstant(null, 'Symbol'),
+      'for',
+      [Ast.AstString(ast.value)]
+    )
+    return this.renderAst(symbol, classes, key)
   }
 
   renderAstClass(ast, classes, key) {
@@ -104,8 +110,8 @@ class RenderEcma extends Component {
     if(ast.receiver)
       throw new Error("FIXME: Haven't implemented method definition receivers")
 
-    const message = this.renderAst(ast.message, ['message'], 1)
-    let   params  = []
+    let message = ast.message === 'initialize' ? 'constructor' : ast.message
+    let params  = []
     ast.params.forEach((param, i) => {
       params.push(this.renderAst(param, [], i))
       params.push(", ")
@@ -122,7 +128,7 @@ class RenderEcma extends Component {
       </Chunk>
       { this.renderAst(ast.body, ['body'], 0) }
       <Chunk>
-        <Kw>{"}"}</Kw>
+        {"}"}
       </Chunk>
     </span>
   }
@@ -164,14 +170,23 @@ class RenderEcma extends Component {
   }
 
   renderAstInstanceVar(ast, classes, key) {
+    const receiver = this.renderAst(Ast.AstCrntInstance(), [], 0)
+    const name     = <span className="propertyAccess">{ast.name}</span>
     return <span className={this.className(ast, classes)} key={key}>
-      this.{ast.name} /* fix this */
+      {receiver}.{name}
     </span>
   }
 
   renderAstLocalVar(ast, classes, key) {
     return <span className={this.className(ast, classes)} key={key}>
       {ast.name}
+    </span>
+  }
+
+  renderAstCrntInstance(ast, classes, key) {
+    classes = classes.concat(['this'])
+    return <span className={this.className(ast, classes)} key={key}>
+      <Kw>this</Kw>
     </span>
   }
 }

@@ -99,8 +99,7 @@ class RenderRuby extends Component {
     if(ast.receiver)
       throw new Error("FIXME: Haven't implemented method definition receivers")
 
-    const message = this.renderAst(ast.message, ['message'], 1)
-    let   params  = []
+    let params  = []
     ast.params.forEach((param, i) => {
       params.push(this.renderAst(param, [], i))
       params.push(", ")
@@ -111,7 +110,7 @@ class RenderRuby extends Component {
     return <span className={this.className(ast, classes)} key={key}>
       <Chunk>
         <Kw>def</Kw>
-        <span className="message">{message}</span>
+        <span className="message">{ast.message}</span>
         {params.length ? '(' : ''}
         <span className="params">{params}</span>
         {params.length ? ')' : ''}
