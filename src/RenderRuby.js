@@ -35,7 +35,7 @@ class RenderRuby extends Component {
     if(!ast) return null
     if(typeof ast === 'string')
       return <span className={classes.join(" ")}>
-        ast
+        {ast}
       </span>
     const handlerName = 'render'+ast.type
     if(handlerName in this)
