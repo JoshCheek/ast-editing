@@ -13,6 +13,12 @@ class Chunk extends Component {
     return <span className="displayBlock">{this.props.children}</span>
   }
 }
+class EagerCursor extends Component {
+  render() {
+    return <span className="EagerCursor">
+    </span>
+  }
+}
 
 class RenderEcma extends Component {
   className(ast, classes) {
@@ -217,8 +223,10 @@ class RenderEcma extends Component {
   }
 
   renderAstSelected(ast, classes, key) {
+    if(ast.ast)
+      return this.renderAst(ast.ast, ['selected', ...classes], key)
     return <span className={this.className(ast, ['selected', ...classes])} key={key}>
-      {this.renderAst(ast.ast, [], 0)}
+      <EagerCursor />
     </span>
   }
 }

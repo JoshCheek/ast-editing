@@ -70,11 +70,11 @@
   outline: 2px solid #ABF;
 }
 
-.Ruby .eagerCursor {
+.Ruby .EagerCursor {
   width: 0.5em;
   height: 1em;
   display: inline-block;
 }
-.Ruby .eagerCursor::before {
+.Ruby .EagerCursor::before {
   /* content: " >"; */
 }

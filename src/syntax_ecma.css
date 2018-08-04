@@ -78,3 +78,11 @@
   background-color: white;
   outline: 2px solid #ABF;
 }
+.Ecma .EagerCursor {
+  width: 0.5em;
+  height: 1em;
+  display: inline-block;
+}
+.Ruby .EagerCursor::before {
+  /* content: " >"; */
+}

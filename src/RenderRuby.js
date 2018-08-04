@@ -14,7 +14,7 @@ class Chunk extends Component {
 }
 class EagerCursor extends Component {
   render() {
-    return <span className="eagerCursor">
+    return <span className="EagerCursor">
     </span>
   }
 }
@@ -63,7 +63,7 @@ class RenderRuby extends Component {
 
   renderAstCall(ast, classes, key) {
     const receiver = this.renderAst(ast.receiver, ['receiver'], 0)
-    const message  = <span className="messageClass">{ast.message}</span>
+    const message  = <span className="message">{ast.message}</span>
     const args     = this.renderAst(ast.args, [], 2)
     return <span className={this.className(ast, classes)} key={key}>
       {receiver}{receiver ? "." : null}{message}({args})
