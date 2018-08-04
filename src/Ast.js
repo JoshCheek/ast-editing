@@ -13,6 +13,7 @@ const AST_SIGNATURES = {
   AstInstanceVar:  ['name'],
   AstLocalVar:     ['name'],
   AstCase:         ['condition', 'whenClauses'], // should technically have an ELSE clause, too, but it's not part of my example
+  AstCaseWhens:    [],
   AstCaseWhen:     ['condition', 'body'],
   AstCrntInstance: [],
   AstReturn:       ['value'],
@@ -74,7 +75,8 @@ export let exampleAst = Ast.AstBegin(
               Ast.AstBegin(
                 Ast.AstCase(
                   Ast.AstLocalVar('event'),
-                  [ Ast.AstCaseWhen(
+                  Ast.AstCaseWhens(
+                    Ast.AstCaseWhen(
                       Ast.AstConstant(Ast.AstConstant(null, 'Events'), 'ExitStatus'),
                       Ast.AstAssign(
                         Ast.AstInstanceVar('exitstatus'),
@@ -88,7 +90,7 @@ export let exampleAst = Ast.AstBegin(
                         Ast.AstCall(Ast.AstLocalVar('event'), 'seconds', Ast.AstArgs())
                       ),
                     ),
-                  ]
+                  ),
                 ),
                 Ast.AstReturn(
                   Ast.AstCall(

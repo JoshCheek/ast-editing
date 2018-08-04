@@ -19,10 +19,7 @@
 .Ecma .Ast.Constant {
   color: purple;
 }
-.Ecma .Ast.Module .body {
-  margin-left: 1em;
-}
-.Ecma .Ast.Class .body {
+.Ecma .body {
   margin-left: 1em;
   display: block;
 }
@@ -39,12 +36,7 @@
   color: green;
 }
 .Ecma .Ast.Def {
-  Padding-top: 1em;
-  display: block;
-}
-.Ecma .Ast.Def .body {
-  margin-left: 1em;
-  display: block;
+  margin-top: 1em;
 }
 
 .Ecma .Ast.Assign {

@@ -40,11 +40,6 @@
 }
 .Ruby .Ast.Def {
   margin-top: 1em;
-  display: block;
-}
-.Ruby .Ast.Def .body {
-  margin-left: 1em;
-  display: block;
 }
 
 .Ruby .Ast.Assign {
@@ -71,8 +66,8 @@
 }
 
 .Ruby .EagerCursor {
-  width: 0.5em;
-  height: 1em;
+  width:   0.5em;
+  height:  1em;
   display: inline-block;
 }
 .Ruby .EagerCursor::before {

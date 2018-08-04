@@ -175,12 +175,16 @@ class RenderRuby extends Component {
         <Kw>case</Kw>
         {this.renderAst(ast.condition, ['condition'], 0)}
       </Chunk>
-      <span className="whenClauses">
-        {ast.whenClauses.map((clause, i) => this.renderAst(clause, [], i))}
-      </span>
+      {this.renderAst(ast.whenClauses, ['displayBlock'], 0)}
       <Chunk>
         <Kw>end</Kw>
       </Chunk>
+    </span>
+  }
+
+  renderAstCaseWhens(ast, classes, key) {
+    return <span className={this.className(ast, classes)} key={key}>
+      {ast.map((clause, i) => this.renderAst(clause, ['displayBlock'], i))}
     </span>
   }
 

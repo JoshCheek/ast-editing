@@ -163,14 +163,19 @@ class RenderEcma extends Component {
           {this.renderAst(ast.condition, ['condition'], 0)}
         ) {" {"}
       </Chunk>
-      <span className="whenClauses body">
-        {ast.whenClauses.map((clause, i) => this.renderAst(clause, [], i))}
-      </span>
+      {this.renderAst(ast.whenClauses, ['displayBlock', 'body'], 0)}
       <Chunk>
         {"}"}
       </Chunk>
     </span>
   }
+
+  renderAstCaseWhens(ast, classes, key) {
+    return <span className={this.className(ast, classes)} key={key}>
+      {ast.map((clause, i) => this.renderAst(clause, ['displayBlock'], i))}
+    </span>
+  }
+
   renderAstCaseWhen(ast, classes, key) {
     return <span className={this.className(ast, classes)} key={key}>
       <Chunk>
