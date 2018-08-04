@@ -25,15 +25,15 @@ class Ruby extends Component {
   renderAst(ast, classes, key) {
     if(!ast) return null
     if(typeof ast === 'string') return ast
-    const handlerName = 'render'+ast.constructor.name
+    const handlerName = 'render'+ast.type
     if(handlerName in this)
       return this[handlerName](ast, classes, key)
-    throw new Error(`No AST handler "${handlerName}" for ${this.constructor.name} syntax!`)
+    throw new Error(`No AST handler "${handlerName}" for ${ast.type} syntax!`)
   }
 
   renderAstBegin(ast, classes, key) {
     return <div className={this.className(ast, classes)} key={key}>
-      {ast.children.map((child, i) => this.renderAst(child, [], i))}
+      {ast.map((child, i) => this.renderAst(child, [], i))}
     </div>
   }
 
@@ -161,126 +161,103 @@ class Ruby extends Component {
   }
 
   className(ast, classes) {
-    return [...classes, 'Ast', ast.constructor.name.slice(3)].join(" ")
+    return [...classes, 'Ast', ast.type.slice(3)].join(" ")
   }
   keyword(kw) {
     return <span class="keyword">{kw}</span>
   }
 }
 
-class Ast {
-  constructor(...children) { this.children = children }
-}
-class AstBegin extends Ast {
-}
-class AstLiteral extends Ast {
-  get value() { return this.children[0] }
-}
-class AstString extends AstLiteral {
-}
-class AstSymbol extends AstLiteral {
-}
-class AstCall extends Ast {
-  get receiver()     { return this.children[0] }
-  get message()      { return this.children[1] }
-  get args()         { return this.children[2] }
-}
-class AstClass extends Ast {
-  get constant()     { return this.children[0] }
-  get superclass()   { return this.children[1] }
-  get body()         { return this.children[2] }
-}
-class AstModule extends Ast {
-  get constant()     { return this.children[0] }
-  get body()         { return this.children[1] }
-}
-class AstConstant extends Ast {
-  get namespace()    { return this.children[0] }
-  get name()         { return this.children[1] }
-}
-class AstDef extends Ast {
-  get receiver()     { return this.children[0] }
-  get message()      { return this.children[1] }
-  get params()       { return this.children[2] }
-  get body()         { return this.children[3] }
-}
-class AstAssign extends Ast {
-  get lhs()          { return this.children[0] }
-  get rhs()          { return this.children[1] }
-}
-class AstInstanceVar extends Ast {
-  get name()         { return this.children[0] }
-}
-class AstLocalVar extends Ast {
-  get name()         { return this.children[0] }
+const AST_SIGNATURES = {
+  AstBegin:       [],
+  AstString:      ['value'],
+  AstSymbol:      ['value'],
+  AstCall:        ['receiver', 'message', 'args'],
+  AstClass:       ['constant', 'superclass', 'body'],
+  AstModule:      ['constant', 'body'],
+  AstConstant:    ['namespace', 'name'],
+  AstDef:         ['receiver', 'message', 'params', 'body'],
+  AstAssign:      ['lhs', 'rhs'],
+  AstInstanceVar: ['name'],
+  AstLocalVar:    ['name'],
+  AstCase:        ['condition', 'whenClauses'], // should technically have an ELSE clause, too, but it's not part of my example
+  AstCaseWhen:    ['condition', 'body'],
 }
 
-class AstCase extends Ast {
-  // should technically have an ELSE clause, too, but it's not part of my example
-  get condition()    { return this.children[0] }
-  get whenClauses()  { return this.children[1] }
-}
-class AstCaseWhen extends Ast {
-  get condition()    { return this.children[0] }
-  get body()         { return this.children[1] }
+const Ast = {}
+
+for (let className in AST_SIGNATURES) {
+  let childNames = AST_SIGNATURES[className]
+  Ast[className] = function() {
+    const ast = new Array(...arguments)
+    ast.type = className
+    childNames.forEach((childName, i) => {
+      Object.defineProperty(
+        ast,
+        childName,
+        {get: function() { return this[i] }}
+      )
+    })
+    return ast
+  }
 }
 
 
-const ast = new AstBegin(
-  new AstCall(
+const ast = Ast.AstBegin(
+  Ast.AstCall(
     null,
     "require",
-    [new AstString("seeing_is_believing/event_stream/events")]
+    [new Ast.AstString("seeing_is_believing/event_stream/events")]
   ),
-  new AstClass(
-    new AstConstant(null, "SeeingIsBelieving"),
+  Ast.AstClass(
+    Ast.AstConstant(null, "SeeingIsBelieving"),
     null,
-    new AstModule(
-      new AstConstant(null, "EventStream"),
-      new AstModule(
-        new AstConstant(null, 'Handlers'),
-        new AstClass(
-          new AstConstant(null, 'RecordExitEvents'),
+    Ast.AstModule(
+      Ast.AstConstant(null, "EventStream"),
+      Ast.AstModule(
+        Ast.AstConstant(null, 'Handlers'),
+        Ast.AstClass(
+          Ast.AstConstant(null, 'RecordExitEvents'),
           null,
-          new AstBegin(
-            new AstCall(null, 'attr_reader', [new AstSymbol('exitstatus')]),
-            new AstCall(null, 'attr_reader', [new AstSymbol('timeout_seconds')]),
-            new AstDef(
+          Ast.AstBegin(
+            Ast.AstCall(null, 'attr_reader', [Ast.AstSymbol('exitstatus')]),
+            Ast.AstCall(null, 'attr_reader', [Ast.AstSymbol('timeout_seconds')]),
+            Ast.AstDef(
               null,
               'initialize',
               ["next_observer"],
-              new AstAssign(
-                new AstInstanceVar("next_observer"),
-                new AstLocalVar("next_observer"),
+              Ast.AstAssign(
+                Ast.AstInstanceVar("next_observer"),
+                Ast.AstLocalVar("next_observer"),
               ),
             ),
-            new AstDef(
+            Ast.AstDef(
               null,
               "call",
               ["event"],
-              new AstBegin(
-                new AstCase(
-                  new AstLocalVar('event'),
-                  [ new AstCaseWhen(
-                      new AstConstant(new AstConstant(null, 'Events'), 'ExitStatus'),
-                      new AstAssign(
-                        new AstInstanceVar('exitstatus'),
-                        new AstCall(new AstLocalVar('event'), 'value', []),
+              Ast.AstBegin(
+                Ast.AstCase(
+                  Ast.AstLocalVar('event'),
+                  [ Ast.AstCaseWhen(
+                      Ast.AstConstant(Ast.AstConstant(null, 'Events'), 'ExitStatus'),
+                      Ast.AstAssign(
+                        Ast.AstInstanceVar('exitstatus'),
+                        Ast.AstCall(Ast.AstLocalVar('event'), 'value', []),
                       )
                     ),
-                    new AstCaseWhen(
-                      new AstConstant(new AstConstant(null, 'Events'), 'Timeout'),
-                      new AstAssign(
-                        new AstInstanceVar('timeout_seconds'),
-                        new AstCall(new AstLocalVar('event'), 'seconds', [])
+                    Ast.AstCaseWhen(
+                      Ast.AstConstant(Ast.AstConstant(null, 'Events'), 'Timeout'),
+                      Ast.AstAssign(
+                        Ast.AstInstanceVar('timeout_seconds'),
+                        Ast.AstCall(Ast.AstLocalVar('event'), 'seconds', [])
                       ),
                     ),
                   ]
                 ),
-                new AstCall(
-                  new AstInstanceVar('next_observer'),
+                Ast.AstCall(
+                  Ast.AstInstanceVar('next_observer'),
                   'call',
-                  [new AstLocalVar('event')]
+                  [Ast.AstLocalVar('event')]
                 )
               )
             ),
