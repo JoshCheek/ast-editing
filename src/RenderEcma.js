@@ -184,7 +184,7 @@ class RenderEcma extends Component {
         :
       </Chunk>
       <span className="body">
-        {this.renderAst(ast.body, [], 0)}
+        {this.renderAst(ast.body, ['displayBlock'], 0)}
         <Kw>break</Kw>
       </span>
     </span>
@@ -192,15 +192,15 @@ class RenderEcma extends Component {
 
   renderAstInstanceVar(ast, classes, key) {
     const receiver = this.renderAst(Ast.AstCrntInstance(), [], 0)
-    const name     = <span className="propertyAccess">{ast.name}</span>
+    const property = this.renderAst(ast.name, [], 1)
     return <span className={this.className(ast, classes)} key={key}>
-      {receiver}.{name}
+      {receiver}.{property}
     </span>
   }
 
   renderAstLocalVar(ast, classes, key) {
     return <span className={this.className(ast, classes)} key={key}>
-      {ast.name}
+      {this.renderAst(ast.name, [], 0)}
     </span>
   }
 
