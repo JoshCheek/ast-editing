@@ -13,7 +13,7 @@ class Chunk extends Component {
   }
 }
 
-class Ruby extends Component {
+class RenderRuby extends Component {
   render() {
     return <div className="Ruby">
       {this.renderAst(this.props.ast, [], 0)}
@@ -173,4 +173,4 @@ class Ruby extends Component {
   }
 }
 
-export default Ruby
+export default RenderRuby

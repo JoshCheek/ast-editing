@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import Ruby from './Ruby.js';
+import RenderRuby from './RenderRuby.js';
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
 import {Ast, exampleAst} from './Ast.js'
@@ -13,7 +13,7 @@ renderUpdate()
 function renderUpdate() {
   ReactDOM.render(
     <div>
-      <Ruby ast={ast}/>
+      <RenderRuby ast={ast}/>
     </div>,
     document.getElementById('root')
   )
