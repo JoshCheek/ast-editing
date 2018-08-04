@@ -14,6 +14,7 @@ const AST_SIGNATURES = {
   AstCaseWhen:     ['condition', 'body'],
   AstImport:       ['name', 'location'],
   AstCrntInstance: [],
+  AstReturn:       ['value'],
 }
 
 const Ast = {}
@@ -85,12 +86,14 @@ export let exampleAst = Ast.AstBegin(
                     ),
                   ]
                 ),
-                Ast.AstCall(
-                  Ast.AstInstanceVar('next_observer'),
-                  'call',
-                  [Ast.AstLocalVar('event')]
-                )
-              )
+                Ast.AstReturn(
+                  Ast.AstCall(
+                    Ast.AstInstanceVar('next_observer'),
+                    'call',
+                    [Ast.AstLocalVar('event')]
+                  )
+                ),
+              ),
             ),
           ),
         ),

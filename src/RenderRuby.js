@@ -176,6 +176,13 @@ class RenderRuby extends Component {
       key
     )
   }
+
+  renderAstReturn(ast, classes, key) {
+    return <span className={this.className(ast, classes)} key={key}>
+      <Kw>return</Kw>
+      {this.renderAst(ast.value, ['returnValue'], 0)}
+    </span>
+  }
 }
 
 export default RenderRuby

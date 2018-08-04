@@ -189,6 +189,13 @@ class RenderEcma extends Component {
       <Kw>this</Kw>
     </span>
   }
+
+  renderAstReturn(ast, classes, key) {
+    return <span className={this.className(ast, classes)} key={key}>
+      <Kw>return</Kw>
+      {this.renderAst(ast.value, ['returnValue'], 0)}
+    </span>
+  }
 }
 
 export default RenderEcma
