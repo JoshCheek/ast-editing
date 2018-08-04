@@ -18,15 +18,25 @@ function setCursor(state) {
 }
 
 
-let state = {ast: exampleAst, position: [1, 2, 1, 1, 2, 2, 2]}
-// let state = {ast: exampleAst, position: [1, 2, 1, 1, 1]}
-state = setCursor(state)
-window.state = state
+let state = setCursor({
+  ast: exampleAst,
+  position: [1, 2, 1, 1, 2, 2, 2]
+})
+
+const onKeyPress = function(event) {
+  console.log(event)
+  if(event.key === 'Enter') {
+    // *shrug* couldn't think of a good way to do it nondestructively, so, fuckit!
+    state.position.pop()
+    state = setCursor(state)
+    renderUpdate()
+  }
+}
 
 renderUpdate()
 function renderUpdate() {
   ReactDOM.render(
-    <div>
+    <div onKeyPress={onKeyPress} tabIndex="0">
       <RenderRuby ast={state.ast}/>
       <RenderEcma ast={state.ast}/>
     </div>,
