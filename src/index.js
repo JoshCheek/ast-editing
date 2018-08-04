@@ -25,7 +25,10 @@ class Ruby extends Component {
   renderAst(ast, classes, key) {
     if(!ast) return null
     if(typeof ast === 'string') return ast
-    return this['render'+ast.constructor.name](ast, classes, key)
+    const handlerName = 'render'+ast.constructor.name
+    if(handlerName in this)
+      return this[handlerName](ast, classes, key)
+    throw new Error(`No AST handler "${handlerName}" for ${this.constructor.name} syntax!`)
   }
 
   renderAstBegin(ast, classes, key) {
