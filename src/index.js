@@ -14,8 +14,8 @@ renderUpdate()
 function renderUpdate() {
   ReactDOM.render(
     <div>
-      <RenderEcma ast={ast}/>
       <RenderRuby ast={ast}/>
+      <RenderEcma ast={ast}/>
     </div>,
     document.getElementById('root')
   )

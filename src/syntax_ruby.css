@@ -1,9 +1,14 @@
 .Ruby {
   margin:           1em;
   font-family:      monospace;
-  display:          block;
+  display:          inline-block;
   padding:          1em;
   background-color: #FEE;
+}
+.Ruby h2 {
+  margin:      0;
+  font-family: sans-serif;
+  color:       rgba(0, 0, 0, 0.2);
 }
 
 .Ruby .Ast {

@@ -1,9 +1,14 @@
 .Ecma {
   margin:           1em;
   font-family:      monospace;
-  display:          block;
+  display:          inline-block;
   padding:          1em;
   background-color: #DEF;
+}
+.Ecma h2 {
+  margin:      0;
+  font-family: sans-serif;
+  color:       rgba(0, 0, 0, 0.2);
 }
 
 .Ecma .Ast {

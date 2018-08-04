@@ -20,8 +20,8 @@ class RenderEcma extends Component {
   }
 
   render(args) {
-    // return <p>pending</p>
     return <div className="Ecma">
+      <h2>ECMA(ish) syntax</h2>
       {this.renderAst(this.props.ast, [], 0)}
     </div>
   }

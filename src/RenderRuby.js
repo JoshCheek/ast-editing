@@ -20,6 +20,7 @@ class RenderRuby extends Component {
 
   render() {
     return <div className="Ruby">
+      <h2>Ruby syntax</h2>
       {this.renderAst(this.props.ast, [], 0)}
     </div>
   }
