@@ -62,7 +62,7 @@ class RenderRuby extends Component {
   }
 
   renderAstCall(ast, classes, key) {
-    const receiver = ast.receiver ? this.renderAst(ast.receiver, ['receiver'], 0) : null
+    const receiver = this.renderAst(ast.receiver, ['receiver'], 0)
     const message  = <span className="messageClass">{ast.message}</span>
     const args     = this.renderAst(ast.args, [], 2)
     return <span className={this.className(ast, classes)} key={key}>

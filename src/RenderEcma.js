@@ -84,7 +84,8 @@ class RenderEcma extends Component {
       <Chunk>
         <Kw>class</Kw>
         {constant}
-        {superclass ? [<Kw>extends</Kw>, superclass] : ""}
+        {superclass && <Kw>extends</Kw>}
+        {superclass}
         {" {"}
       </Chunk>
         {body}
