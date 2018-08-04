@@ -181,44 +181,31 @@ class Ruby extends Component {
 }
 
 class Ast {
-  constructor(...children) {
-    this.children = children
-  }
-  get type()         { return 'generic' }
+  constructor(...children) { this.children = children }
   get childClasses() { return new Array(this.children.length).fill("") }
-  get isRoot()       { return false }
-  get isLiteral()    { return false }
-  get isAst()        { return true }
 }
 class AstBegin extends Ast {
-  get type() { return 'begin' }
 }
 class AstLiteral extends Ast {
-  get isLiteral() { return true }
   get value() { return this.children[0] }
 }
 class AstString extends AstLiteral {
-  get type() { return 'string' }
 }
 class AstSymbol extends AstLiteral {
-  get type() { return 'string' }
 }
 class AstCall extends Ast {
-  get type()         { return 'call' }
   get childClasses() { return ['receiver', 'message', 'args'] }
   get receiver()     { return this.children[0] }
   get message()      { return this.children[1] }
   get args()         { return this.children[2] }
 }
 class AstClass extends Ast {
-  get type()         { return 'class' }
   get childClasses() { return ['constant', 'superclass', 'body'] }
   get constant()     { return this.children[0] }
   get superclass()   { return this.children[1] }
   get body()         { return this.children[2] }
 }
 class AstModule extends Ast {
-  get type()         { return 'class' }
   get childClasses() { return ['constant', 'body'] }
   get constant()     { return this.children[0] }
   get body()         { return this.children[1] }
