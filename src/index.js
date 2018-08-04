@@ -156,6 +156,9 @@ class Ruby extends Component {
       <span className={whenClausesClass}>
         {ast.whenClauses.map((clause, i) => this.renderAst(clause, [], i))}
       </span>
+      <Line>
+        <Keyword kw="end" />
+      </Line>
     </span>
   }
   renderAstCaseWhen(ast, classes, key) {
@@ -166,9 +169,6 @@ class Ruby extends Component {
         {this.renderAst(ast.condition, [conditionClass], 0)}
       </Line>
       {this.renderAst(ast.body, [bodyClass], 0)}
-      <Line>
-        <Keyword kw="end" />
-      </Line>
     </span>
   }
 
@@ -296,21 +296,19 @@ const ast = new AstBegin(
                 new AstCase(
                   new AstLocalVar('event'),
                   [ new AstCaseWhen(
-                      new AstConstant(
-                        new AstConstant(null, 'Events'),
-                        'ExitStatus'
-                      ),
+                      new AstConstant(new AstConstant(null, 'Events'), 'ExitStatus'),
                       new AstAssign(
                         new AstInstanceVar('exitstatus'),
-                        new AstCall(
-                          new AstLocalVar('event'),
-                          'seconds',
-                          []
-                        ),
+                        new AstCall(new AstLocalVar('event'), 'value', []),
                       )
                     ),
-                    // new AstCaseWhen(
-                    // ),
+                    new AstCaseWhen(
+                      new AstConstant(new AstConstant(null, 'Events'), 'Timeout'),
+                      new AstAssign(
+                        new AstInstanceVar('timeout_seconds'),
+                        new AstCall(new AstLocalVar('event'), 'seconds', [])
+                      ),
+                    ),
                   ]
                 ),
                 new AstCall(
