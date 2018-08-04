@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-// import App from './App';
+import './ruby_syntax.css';
 import registerServiceWorker from './registerServiceWorker';
 
 class Keyword extends Component {
