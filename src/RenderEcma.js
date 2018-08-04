@@ -74,7 +74,6 @@ class RenderEcma extends Component {
   }
 
   renderAstClass(ast, classes, key) {
-    // FIXME: rename constant -> name
     const constant   = this.renderAst(ast.constant,   ['constant'],   0)
     const superclass = this.renderAst(ast.superclass, ['superclass'], 1)
     const body       = this.renderAst(ast.body,       ['body'],       2)
@@ -163,7 +162,10 @@ class RenderEcma extends Component {
         {this.renderAst(ast.condition, ['condition'], 0)}
         :
       </Chunk>
-      {this.renderAst(ast.body, ['body'], 0)}
+      <span className="body">
+        {this.renderAst(ast.body, [], 0)}
+        <Kw>break</Kw>
+      </span>
     </span>
   }
 
