@@ -55,14 +55,14 @@ class Ruby extends Component {
 
   renderAstCall(ast, classes, key) {
     const [receiverClass, messageClass, argsClass] = ast.childClasses
-    const receiver = ast.receiver ? this.renderAst(ast.receiver, receiverClass, 0) : null
+    const receiver = ast.receiver ? this.renderAst(ast.receiver, [receiverClass], 0) : null
     const message  = <span className={messageClass}>{ast.message}</span>
     const args     = <span className={argsClass}>
       {ast.args.map((arg, i) => this.renderAst(arg, [], i))}
     </span>
-    return <div className={this.className(ast, classes)} key={key}>
+    return <span className={this.className(ast, classes)} key={key}>
       {receiver}{receiver ? "." : null}{message}({args})
-    </div>
+    </span>
   }
   renderAstClass(ast, classes, key) {
     const [constantClass, superclassClass, bodyClass] = ast.childClasses
@@ -90,11 +90,11 @@ class Ruby extends Component {
     </div>
   }
   renderAstConstant(ast, classes, key) {
-    if(ast.namespace)
-      throw new Error("FIXME: Haven't implemented namespaces yet!")
-
+    const [nsClass, nameClass] = ast.childClasses
+    const ns   = ast.namespace ? this.renderAst(ast.namespace, [nsClass], 0) : null
+    const name = this.renderAst(ast.name, [nameClass], 1)
     return <span className={this.className(ast, classes)} key={key}>
-      {ast.name}
+      {ns}{ns?"::":""}{name}
     </span>
   }
   renderAstDef(ast, classes, key) {
@@ -143,6 +143,32 @@ class Ruby extends Component {
   renderAstLocalVar(ast, classes, key) {
     return <span className={this.className(ast, classes)} key={key}>
       {ast.name}
+    </span>
+  }
+
+  renderAstCase(ast, classes, key) {
+    const [conditionClass, whenClausesClass] = ast.childClasses
+    return <span className={this.className(ast, classes)} key={key}>
+      <Line>
+        <Keyword kw="case" />
+        {this.renderAst(ast.condition, [conditionClass], 0)}
+      </Line>
+      <span className={whenClausesClass}>
+        {ast.whenClauses.map((clause, i) => this.renderAst(clause, [], i))}
+      </span>
+    </span>
+  }
+  renderAstCaseWhen(ast, classes, key) {
+    const [conditionClass, bodyClass] = ast.childClasses
+    return <span className={this.className(ast, classes)} key={key}>
+      <Line>
+        <Keyword kw="when" />
+        {this.renderAst(ast.condition, [conditionClass], 0)}
+      </Line>
+      {this.renderAst(ast.body, [bodyClass], 0)}
+      <Line>
+        <Keyword kw="end" />
+      </Line>
     </span>
   }
 
@@ -221,6 +247,18 @@ class AstLocalVar extends Ast {
   get name()         { return this.children[0] }
 }
 
+class AstCase extends Ast {
+  // should technically have an ELSE clause, too, but it's not part of my example
+  get childClasses() { return ['condition', 'whenClauses'] }
+  get condition()    { return this.children[0] }
+  get whenClauses()  { return this.children[1] }
+}
+class AstCaseWhen extends Ast {
+  get childClasses() { return ['condition', 'body'] }
+  get condition()    { return this.children[0] }
+  get body()         { return this.children[1] }
+}
+
 
 const ast = new AstBegin(
   new AstCall(
@@ -249,6 +287,38 @@ const ast = new AstBegin(
                 new AstInstanceVar("next_observer"),
                 new AstLocalVar("next_observer"),
               ),
+            ),
+            new AstDef(
+              null,
+              "call",
+              ["event"],
+              new AstBegin(
+                new AstCase(
+                  new AstLocalVar('event'),
+                  [ new AstCaseWhen(
+                      new AstConstant(
+                        new AstConstant(null, 'Events'),
+                        'ExitStatus'
+                      ),
+                      new AstAssign(
+                        new AstInstanceVar('exitstatus'),
+                        new AstCall(
+                          new AstLocalVar('event'),
+                          'seconds',
+                          []
+                        ),
+                      )
+                    ),
+                    // new AstCaseWhen(
+                    // ),
+                  ]
+                ),
+                new AstCall(
+                  new AstInstanceVar('next_observer'),
+                  'call',
+                  [new AstLocalVar('event')]
+                )
+              )
             ),
           ),
         ),
