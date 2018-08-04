@@ -11,7 +11,7 @@ class Keyword extends Component {
 }
 class Line extends Component {
   render() {
-    return <div className="line">{this.props.children}</div>
+    return <span className="line">{this.props.children}</span>
   }
 }
 
@@ -68,7 +68,7 @@ class Ruby extends Component {
     const body       = this.renderAst(ast.body,       [bodyClass],       2)
     return <div className={this.className(ast, classes)} key={key}>
       <Line>
-        <Keyword kw="class" /> {constant}{superclass ? [" < ", superclass] : ""}
+        <Keyword kw="class" />{constant}{superclass ? [" < ", superclass] : ""}
       </Line>
         {body}
       <Line>
@@ -81,7 +81,7 @@ class Ruby extends Component {
     const constant   = this.renderAst(ast.constant,   [constantClass],   0)
     const body       = this.renderAst(ast.body,       [bodyClass],       2)
     return <div className={this.className(ast, classes)} key={key}>
-      <Line><Keyword kw="module" /> {constant}</Line>
+      <Line><Keyword kw="module" />{constant}</Line>
         {body}
       <Line><Keyword kw="end" /></Line>
     </div>
@@ -98,7 +98,7 @@ class Ruby extends Component {
     if(ast.receiver)
       throw new Error("FIXME: Haven't implemented method definition receivers")
 
-    const [receiverClass, messageClass, paramsClass] = ast.childClasses
+    const [_receiverClass, messageClass, paramsClass, bodyClass] = ast.childClasses
     const message = this.renderAst(ast.message, [messageClass], 1)
     let   params  = []
     ast.params.forEach((param, i) => {
@@ -111,13 +111,35 @@ class Ruby extends Component {
     return <span className={this.className(ast, classes)} key={key}>
       <Line>
         <Keyword kw="def" />
-        {message}
+        <span className={messageClass}>{message}</span>
         {params.length ? '(' : ''}
-        {params}
+        <span className={paramsClass}>{params}</span>
         {params.length ? ')' : ''}
       </Line>
-        {ast.body}
+        {this.renderAst(ast.body, [bodyClass], 0)}
       <Line><Keyword kw="end" /></Line>
+    </span>
+  }
+
+  renderAstAssign(ast, classes, key) {
+    const [lhsClass, rhsClass] = ast.childClasses
+    return <span className={this.className(ast, classes)} key={key}>
+      <Line>
+        {this.renderAst(ast.lhs, [lhsClass], 0)}
+        {" = "}
+        {this.renderAst(ast.rhs, [rhsClass], 2)}
+      </Line>
+    </span>
+  }
+
+  renderAstInstanceVar(ast, classes, key) {
+    return <span className={this.className(ast, classes)} key={key}>
+      @{ast.name}
+    </span>
+  }
+  renderAstLocalVar(ast, classes, key) {
+    return <span className={this.className(ast, classes)} key={key}>
+      {ast.name}
     </span>
   }
 
@@ -184,6 +206,17 @@ class AstDef extends Ast {
   get params()       { return this.children[2] }
   get body()         { return this.children[3] }
 }
+class AstAssign extends Ast {
+  get childClasses() { return ['lhs', 'rhs'] }
+  get lhs()          { return this.children[0] }
+  get rhs()          { return this.children[1] }
+}
+class AstInstanceVar extends Ast {
+  get name()         { return this.children[0] }
+}
+class AstLocalVar extends Ast {
+  get name()         { return this.children[0] }
+}
 
 
 const ast = new AstBegin(
@@ -205,7 +238,15 @@ const ast = new AstBegin(
           new AstBegin(
             new AstCall(null, 'attr_reader', [new AstSymbol('exitstatus')]),
             new AstCall(null, 'attr_reader', [new AstSymbol('timeout_seconds')]),
-            new AstDef(null, 'initialize', ["next_observer"], null),
+            new AstDef(
+              null,
+              'initialize',
+              ["next_observer"],
+              new AstAssign(
+                new AstInstanceVar("next_observer"),
+                new AstLocalVar("next_observer"),
+              ),
+            ),
           ),
         ),
       ),
