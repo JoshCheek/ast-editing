@@ -14,6 +14,14 @@ class Chunk extends Component {
 }
 
 class RenderRuby extends Component {
+  className(ast, classes) {
+    return [...classes, 'Ast', ast.type.slice(3)].join(" ")
+  }
+
+  keyword(kw) {
+    return <span class="keyword">{kw}</span>
+  }
+
   render() {
     return <div className="Ruby">
       {this.renderAst(this.props.ast, [], 0)}
@@ -30,9 +38,9 @@ class RenderRuby extends Component {
   }
 
   renderAstBegin(ast, classes, key) {
-    return <div className={this.className(ast, classes)} key={key}>
+    return <span className={this.className(ast, classes)} key={key}>
       {ast.map((child, i) => this.renderAst(child, [], i))}
-    </div>
+    </span>
   }
 
   renderAstString(ast, classes, key) {
@@ -62,7 +70,7 @@ class RenderRuby extends Component {
     const constant   = this.renderAst(ast.constant,   ['constant'],   0)
     const superclass = this.renderAst(ast.superclass, ['superclass'], 1)
     const body       = this.renderAst(ast.body,       ['body'],       2)
-    return <div className={this.className(ast, classes)} key={key}>
+    return <span className={this.className(ast, classes)} key={key}>
       <Chunk>
         <Kw>class</Kw>{constant}{superclass ? [" < ", superclass] : ""}
       </Chunk>
@@ -70,17 +78,17 @@ class RenderRuby extends Component {
       <Chunk>
         <Kw>end</Kw>
       </Chunk>
-    </div>
+    </span>
   }
 
   renderAstModule(ast, classes, key) {
     const constant = this.renderAst(ast.constant, ['constant'], 0)
     const body     = this.renderAst(ast.body,     ['body'],     2)
-    return <div className={this.className(ast, classes)} key={key}>
+    return <span className={this.className(ast, classes)} key={key}>
       <Chunk><Kw>module</Kw>{constant}</Chunk>
         {body}
         <Chunk><Kw>end</Kw></Chunk>
-    </div>
+    </span>
   }
 
   renderAstConstant(ast, classes, key) {
@@ -170,14 +178,6 @@ class RenderRuby extends Component {
       classes,
       key
     )
-  }
-
-  className(ast, classes) {
-    return [...classes, 'Ast', ast.type.slice(3)].join(" ")
-  }
-
-  keyword(kw) {
-    return <span class="keyword">{kw}</span>
   }
 }
 
