@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Ast from './Ast.js'
 import './syntax_ecma.css'
+// https://www.ecma-international.org/ecma-262/9.0/index.html#sec-method-definitions
 
 class Kw extends Component {
   render() {
