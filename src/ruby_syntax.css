@@ -5,7 +5,8 @@
 
 .Ruby .Ast {
 }
-.Ruby .Ast.Begin {
+.Ruby .Ast.Begin > * {
+  display: block;
 }
 .Ruby .Ast.Constant {
   color: purple;

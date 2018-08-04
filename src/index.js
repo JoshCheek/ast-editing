@@ -33,11 +33,7 @@ class Ruby extends Component {
 
   renderAstBegin(ast, classes, key) {
     return <div className={this.className(ast, classes)} key={key}>
-      {ast.children.map(
-        (child, i) => (<div key={i}>
-          {this.renderAst(child, ast.childClasses[i], i)}
-        </div>)
-      )}
+      {ast.children.map((child, i) => this.renderAst(child, [], i))}
     </div>
   }
 
