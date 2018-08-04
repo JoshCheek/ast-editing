@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import Ast from './Ast.js'
+// import Ast from './Ast.js'
 import './syntax_ruby.css'
 
 class Kw extends Component {
@@ -192,14 +192,6 @@ class RenderRuby extends Component {
       </Chunk>
       {this.renderAst(ast.body, ['body'], 0)}
     </span>
-  }
-
-  renderAstImport(ast, classes, key) {
-    return this.renderAst(
-      new Ast.AstCall(null, 'require', Ast.AstArgs(ast.location)),
-      classes,
-      key
-    )
   }
 
   renderAstReturn(ast, classes, key) {

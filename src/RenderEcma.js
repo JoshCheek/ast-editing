@@ -50,15 +50,6 @@ class RenderEcma extends Component {
     </span>
   }
 
-  renderAstImport(ast, classes, key) {
-    return <span className={this.className(ast, classes)} key={key}>
-      <Kw>import</Kw>
-      {this.renderAst(ast.name, ['name'], 0)}
-      <Kw>from</Kw>
-      {this.renderAst(ast.location, ['location'], 1)}
-    </span>
-  }
-
   renderAstConstant(ast, classes, key) {
     const ns   = ast.namespace ? this.renderAst(ast.namespace, ['namespace'], 0) : null
     const name = this.renderAst(ast.name, ['name'], 1)
@@ -128,11 +119,11 @@ class RenderEcma extends Component {
   }
 
   renderAstDef(ast, classes, key) {
-    const message = ast.message === 'initialize' ? 'constructor' : ast.message
+    const message = this.renderAst(ast.message, [], 0)
     const params  = this.renderAst(ast.params, [], 1)
     return <span className={this.className(ast, classes)} key={key}>
       <Chunk>
-        <span className="message" key="0">{message}</span>({params})
+        {message}({params})
         {" {"}
       </Chunk>
       { this.renderAst(ast.body, ['body'], 0) }
