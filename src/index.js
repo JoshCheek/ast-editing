@@ -4,21 +4,103 @@ import './index.css';
 // import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 
+class Keyword extends Component {
+  render() {
+    return <span className="keyword">{this.props.kw}</span>
+  }
+}
+class Line extends Component {
+  render() {
+    return <div className="line">{this.props.children}</div>
+  }
+}
+
 class Ruby extends Component {
   render() {
-    return this.renderAst(this.props.ast, [], 0)
+    return <div className="Ruby">
+      {this.renderAst(this.props.ast, [], 0)}
+    </div>
   }
 
   renderAst(ast, classes, key) {
     if(!ast) return null
     if(typeof ast === 'string') return ast
-    return <div className={ast.className(classes)} key={key}>
+    return this['render'+ast.constructor.name](ast, classes, key)
+  }
+
+  renderAstBegin(ast, classes, key) {
+    return <div className={this.className(ast, classes)} key={key}>
       {ast.children.map(
-        (child, i) => this.renderAst(child, ast.childClasses[i], i)
+        (child, i) => (<div key={i}>
+          {this.renderAst(child, ast.childClasses[i], i)}
+        </div>)
       )}
     </div>
   }
 
+  renderAstString(ast, classes, key) {
+    return <span className={this.className(ast, classes)} key={key}>
+      "{ast.value}"
+    </span>
+  }
+
+  renderAstSymbol(ast, classes, key) {
+    return <span className={this.className(ast, classes)} key={key}>
+      :{ast.value}
+    </span>
+  }
+
+  renderAstCall(ast, classes, key) {
+    const [receiverClass, messageClass, argsClass] = ast.childClasses
+    const receiver = ast.receiver ? this.renderAst(ast.receiver, receiverClass, 0) : null
+    const message  = <span className={messageClass}>{ast.message}</span>
+    const args     = <span className={argsClass}>
+      {ast.args.map((arg, i) => this.renderAst(arg, [], i))}
+    </span>
+    return <div className={this.className(ast, classes)} key={key}>
+      {receiver}{receiver ? "." : null}{message}({args})
+    </div>
+  }
+  renderAstClass(ast, classes, key) {
+    const [constantClass, superclassClass, bodyClass] = ast.childClasses
+    const constant   = this.renderAst(ast.constant,   [constantClass],   0)
+    const superclass = this.renderAst(ast.superclass, [superclassClass], 1)
+    const body       = this.renderAst(ast.body,       [bodyClass],       2)
+    return <div className={this.className(ast, classes)} key={key}>
+      <Line>
+        <Keyword kw="class" /> {constant}{superclass ? [" < ", superclass] : ""}
+      </Line>
+        {body}
+      <Line>
+        <Keyword kw="end" />
+      </Line>
+    </div>
+  }
+  renderAstModule(ast, classes, key) {
+    const [constantClass, bodyClass] = ast.childClasses
+    const constant   = this.renderAst(ast.constant,   [constantClass],   0)
+    const body       = this.renderAst(ast.body,       [bodyClass],       2)
+    return <div className={this.className(ast, classes)} key={key}>
+      <Line><Keyword kw="module" /> {constant}</Line>
+        {body}
+      <Line><Keyword kw="end" /></Line>
+    </div>
+  }
+  renderAstConstant(ast, classes, key) {
+    if(ast.namespace)
+      throw new Error("FIXME: Haven't implemented namespaces yet!")
+
+    return <span className={this.className(ast, classes)} key={key}>
+      {ast.name}
+    </span>
+  }
+
+  className(ast, classes) {
+    return [...classes, 'Ast', ast.constructor.name.slice(3)].join(" ")
+  }
+  keyword(kw) {
+    return <span class="keyword">{kw}</span>
+  }
 }
 
 class Ast {
@@ -30,15 +112,13 @@ class Ast {
   get isRoot()       { return false }
   get isLiteral()    { return false }
   get isAst()        { return true }
-  className(classes) {
-    return [...classes, this.constructor.name.slice(3)].join(" ")
-  }
 }
 class AstBegin extends Ast {
   get type() { return 'begin' }
 }
 class AstLiteral extends Ast {
   get isLiteral() { return true }
+  get value() { return this.children[0] }
 }
 class AstString extends AstLiteral {
   get type() { return 'string' }
@@ -48,18 +128,28 @@ class AstSymbol extends AstLiteral {
 }
 class AstCall extends Ast {
   get type()         { return 'call' }
-  get childClasses() { return ['receiver', 'name', 'args'] }
+  get childClasses() { return ['receiver', 'message', 'args'] }
+  get receiver()     { return this.children[0] }
+  get message()      { return this.children[1] }
+  get args()         { return this.children[2] }
 }
 class AstClass extends Ast {
   get type()         { return 'class' }
-  get childClasses() { return ['name', 'superclass', 'body'] }
+  get childClasses() { return ['constant', 'superclass', 'body'] }
+  get constant()     { return this.children[0] }
+  get superclass()   { return this.children[1] }
+  get body()         { return this.children[2] }
 }
 class AstModule extends Ast {
   get type()         { return 'class' }
-  get childClasses() { return ['name', 'body'] }
+  get childClasses() { return ['constant', 'body'] }
+  get constant()     { return this.children[0] }
+  get body()         { return this.children[1] }
 }
 class AstConstant extends Ast {
   get childClasses() { return ['namespace', 'name'] }
+  get namespace()    { return this.children[0] }
+  get name()         { return this.children[1] }
 }
 
 
@@ -67,7 +157,7 @@ const ast = new AstBegin(
   new AstCall(
     null,
     "require",
-    new AstString("seeing_is_believing/event_stream/events")
+    [new AstString("seeing_is_believing/event_stream/events")]
   ),
   new AstClass(
     new AstConstant(null, "SeeingIsBelieving"),
@@ -80,8 +170,8 @@ const ast = new AstBegin(
           new AstConstant(null, 'RecordExitEvents'),
           null,
           new AstBegin(
-            new AstCall(null, 'attr_reader', new AstSymbol('exitstatus')),
-            new AstCall(null, 'attr_reader', new AstSymbol('timeout_seconds')),
+            new AstCall(null, 'attr_reader', [new AstSymbol('exitstatus')]),
+            new AstCall(null, 'attr_reader', [new AstSymbol('timeout_seconds')]),
           ),
         ),
       ),
