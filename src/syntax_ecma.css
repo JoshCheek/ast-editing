@@ -1,0 +1,65 @@
+.Ecma {
+  margin:           1em;
+  font-family:      monospace;
+  display:          block;
+  padding:          1em;
+  background-color: #DEF;
+}
+
+.Ecma .Ast {
+}
+.Ecma .Ast.Begin > * {
+  display: block;
+}
+.Ecma .Ast.Constant {
+  color: purple;
+}
+.Ecma .Ast.Module .body {
+  margin-left: 1em;
+}
+.Ecma .Ast.Class .body {
+  margin-left: 1em;
+  display: block;
+}
+.Ecma .Ast.Module {
+}
+.Ecma .Ast.Class {
+}
+.Ecma .Ast.Call {
+}
+.Ecma .Ast.Symbol {
+  color: blue;
+}
+.Ecma .Ast.String {
+  color: green;
+}
+.Ecma .Ast.Def {
+  Padding-top: 1em;
+  display: block;
+}
+.Ecma .Ast.Def .body {
+  margin-left: 1em;
+  display: block;
+}
+
+.Ecma .Ast.Assign {
+}
+.Ecma .Ast.InstanceVar {
+  color: #08F;
+}
+.Ecma .Ast.LocalVar {
+}
+
+.Ecma .displayBlock {
+  display: block;
+}
+
+.Ecma .keyword {
+  color: rgba(255, 50, 100, 0.75);
+}
+.Ecma * + .keyword::before {
+  content: " "
+}
+.Ecma .keyword::after {
+  content: " "
+}
