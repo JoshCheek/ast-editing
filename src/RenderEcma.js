@@ -107,26 +107,30 @@ class RenderEcma extends Component {
   }
 
   renderAstDef(ast, classes, key) {
-    let message = ast.message === 'initialize' ? 'constructor' : ast.message
-    let params  = []
-    ast.params.forEach((param, i) => {
-      params.push(this.renderAst(param, [], i))
-      params.push(", ")
-    })
-    if(params[params.length-1] === ", ")
-      params.pop()
-
+    const message = ast.message === 'initialize' ? 'constructor' : ast.message
+    const params  = this.renderAst(ast.params, [], 1)
     return <span className={this.className(ast, classes)} key={key}>
       <Chunk>
-        <span className="message">{message}</span>(
-          <span className="params">{params}</span>
-        )
+        <span className="message" key="0">{message}</span>({params})
         {" {"}
       </Chunk>
       { this.renderAst(ast.body, ['body'], 0) }
       <Chunk>
         {"}"}
       </Chunk>
+    </span>
+  }
+
+  renderAstParams(ast, classes, key) {
+    const params = []
+    ast.forEach((param, i) => {
+      params.push(this.renderAst(param, [], i))
+      params.push(", ")
+    })
+    if(params[params.length-1] === ", ")
+      params.pop()
+    return <span className={this.className(ast, ['params', ...classes])} key={key}>
+      {params}
     </span>
   }
 

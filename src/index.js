@@ -11,12 +11,13 @@ const commands = {
   out:  'out',
   down: 'down',
   up:   'up',
+  noop: 'noop',
 }
 
 function boundPosition(ast, position) {
   if(!position.length)
     return []
-  if(!ast)
+  if(!ast || ast.constructor !== Array)
     return []
   let [crnt, ...rest] = position
   if(crnt < 0)
@@ -49,6 +50,9 @@ function applyCommand({ast, selectedAst, position}, command) {
         position[index] = position[index]+1
       }
       break
+    case commands.noop:
+      // noop
+      break
     default:
       // noop
   }
@@ -67,9 +71,9 @@ function selectPosition(ast, position) {
 }
 
 
-let state = {ast: exampleAst, position: []}
+let state = {ast: exampleAst, position: [1, 2, 1, 1, 2, 2, 0]}
 state.selectedAst = state.ast
-state = applyCommand(state, commands.in)
+state = applyCommand(state, commands.noop)
 window.state = state
 
 const onKeyPress = function(event) {

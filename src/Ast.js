@@ -7,6 +7,7 @@ const AST_SIGNATURES = {
   AstModule:       ['constant', 'body'],
   AstConstant:     ['namespace', 'name'],
   AstDef:          ['message', 'params', 'body'],
+  AstParams:       [],
   AstAssign:       ['lhs', 'rhs'],
   AstInstanceVar:  ['name'],
   AstLocalVar:     ['name'],
@@ -60,7 +61,7 @@ export let exampleAst = Ast.AstBegin(
             Ast.AstCall(null, 'attr_reader', [Ast.AstSymbol('timeout_seconds')]),
             Ast.AstDef(
               'initialize',
-              ["next_observer"],
+              Ast.AstParams('next_observer'),
               Ast.AstAssign(
                 Ast.AstInstanceVar("next_observer"),
                 Ast.AstLocalVar("next_observer"),
@@ -68,7 +69,7 @@ export let exampleAst = Ast.AstBegin(
             ),
             Ast.AstDef(
               "call",
-              ["event"],
+              Ast.AstParams('event'),
               Ast.AstBegin(
                 Ast.AstCase(
                   Ast.AstLocalVar('event'),

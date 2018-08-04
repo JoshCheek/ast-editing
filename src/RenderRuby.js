@@ -107,26 +107,31 @@ class RenderRuby extends Component {
   }
 
   renderAstDef(ast, classes, key) {
-    let params = []
-    ast.params.forEach((param, i) => {
-      params.push(this.renderAst(param, [], i))
-      params.push(", ")
-    })
-    if(params[params.length-1] === ", ")
-      params.pop()
-
+    const params = this.renderAst(ast.params, [], 1)
     return <span className={this.className(ast, classes)} key={key}>
       <Chunk>
         <Kw>def</Kw>
         <span className="message">{this.renderAst(ast.message, [], 0)}</span>
-        {params.length ? '(' : ''}
-        <span className="params">{params}</span>
-        {params.length ? ')' : ''}
+        {ast.params.length ? '(' : ''}
+        {params}
+        {ast.params.length ? ')' : ''}
       </Chunk>
       {this.renderAst(ast.body, ['body'], 0)}
       <Chunk>
         <Kw>end</Kw>
       </Chunk>
+    </span>
+  }
+  renderAstParams(ast, classes, key) {
+    const params = []
+    ast.forEach((param, i) => {
+      params.push(this.renderAst(param, [], i))
+      params.push(", ")
+    })
+    if(params[params.length-1] === ", ")
+      params.pop()
+    return <span className={this.className(ast, ['params', ...classes])} key={key}>
+      {params}
     </span>
   }
 
