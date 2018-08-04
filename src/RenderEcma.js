@@ -108,9 +108,6 @@ class RenderEcma extends Component {
   }
 
   renderAstDef(ast, classes, key) {
-    if(ast.receiver)
-      throw new Error("FIXME: Haven't implemented method definition receivers")
-
     let message = ast.message === 'initialize' ? 'constructor' : ast.message
     let params  = []
     ast.params.forEach((param, i) => {
@@ -195,6 +192,12 @@ class RenderEcma extends Component {
     return <span className={this.className(ast, classes)} key={key}>
       <Kw>return</Kw>
       {this.renderAst(ast.value, ['returnValue'], 0)}
+    </span>
+  }
+
+  renderAstSelected(ast, classes, key) {
+    return <span className={this.className(ast, ['selected', ...classes])} key={key}>
+      {this.renderAst(ast.ast, [], 0)}
     </span>
   }
 }

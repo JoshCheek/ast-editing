@@ -39,7 +39,7 @@
   color: green;
 }
 .Ruby .Ast.Def {
-  Padding-top: 1em;
+  margin-top: 1em;
   display: block;
 }
 .Ruby .Ast.Def .body {
@@ -64,4 +64,17 @@
 }
 .Ruby .keyword::after {
   content: " "
+}
+.Ruby .selected {
+  background-color: white;
+  outline: 2px solid #ABF;
+}
+
+.Ruby .eagerCursor {
+  width: 0.5em;
+  height: 1em;
+  display: inline-block;
+}
+.Ruby .eagerCursor::before {
+  /* content: " >"; */
 }

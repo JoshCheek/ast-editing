@@ -74,3 +74,7 @@
 .Ecma .this .keyword::after {
   content: ""
 }
+.Ecma .selected {
+  background-color: white;
+  outline: 2px solid #ABF;
+}

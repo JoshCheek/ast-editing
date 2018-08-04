@@ -12,6 +12,12 @@ class Chunk extends Component {
     return <span className="displayBlock">{this.props.children}</span>
   }
 }
+class EagerCursor extends Component {
+  render() {
+    return <span className="eagerCursor">
+    </span>
+  }
+}
 
 class RenderRuby extends Component {
   className(ast, classes) {
@@ -27,7 +33,10 @@ class RenderRuby extends Component {
 
   renderAst(ast, classes, key) {
     if(!ast) return null
-    if(typeof ast === 'string') return ast
+    if(typeof ast === 'string')
+      return <span className={classes.join(" ")}>
+        ast
+      </span>
     const handlerName = 'render'+ast.type
     if(handlerName in this)
       return this[handlerName](ast, classes, key)
@@ -69,7 +78,7 @@ class RenderRuby extends Component {
     const body       = this.renderAst(ast.body,       ['body'],       2)
     return <span className={this.className(ast, classes)} key={key}>
       <Chunk>
-        <Kw>class</Kw>{constant}{superclass ? [" < ", superclass] : ""}
+        <Kw>class</Kw>{constant}{superclass?" < ":""}{superclass}
       </Chunk>
         {body}
       <Chunk>
@@ -79,12 +88,13 @@ class RenderRuby extends Component {
   }
 
   renderAstModule(ast, classes, key) {
-    const constant = this.renderAst(ast.constant, ['constant'], 0)
-    const body     = this.renderAst(ast.body,     ['body'],     2)
     return <span className={this.className(ast, classes)} key={key}>
-      <Chunk><Kw>module</Kw>{constant}</Chunk>
-        {body}
-        <Chunk><Kw>end</Kw></Chunk>
+      <Chunk>
+        <Kw>module</Kw>
+        {this.renderAst(ast.constant, ['constant'], 1)}
+      </Chunk>
+      {this.renderAst(ast.body, ['body'], 1)}
+      <Chunk><Kw>end</Kw></Chunk>
     </span>
   }
 
@@ -97,10 +107,7 @@ class RenderRuby extends Component {
   }
 
   renderAstDef(ast, classes, key) {
-    if(ast.receiver)
-      throw new Error("FIXME: Haven't implemented method definition receivers")
-
-    let params  = []
+    let params = []
     ast.params.forEach((param, i) => {
       params.push(this.renderAst(param, [], i))
       params.push(", ")
@@ -111,7 +118,7 @@ class RenderRuby extends Component {
     return <span className={this.className(ast, classes)} key={key}>
       <Chunk>
         <Kw>def</Kw>
-        <span className="message">{ast.message}</span>
+        <span className="message">{this.renderAst(ast.message, [], 0)}</span>
         {params.length ? '(' : ''}
         <span className="params">{params}</span>
         {params.length ? ')' : ''}
@@ -182,6 +189,14 @@ class RenderRuby extends Component {
     return <span className={this.className(ast, classes)} key={key}>
       <Kw>return</Kw>
       {this.renderAst(ast.value, ['returnValue'], 0)}
+    </span>
+  }
+
+  renderAstSelected(ast, classes, key) {
+    if(ast.ast)
+      return this.renderAst(ast.ast, ['selected', ...classes], key)
+    return <span className={this.className(ast, ['selected', ...classes])} key={key}>
+      <EagerCursor />
     </span>
   }
 }

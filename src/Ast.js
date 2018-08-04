@@ -6,7 +6,7 @@ const AST_SIGNATURES = {
   AstClass:        ['constant', 'superclass', 'body'],
   AstModule:       ['constant', 'body'],
   AstConstant:     ['namespace', 'name'],
-  AstDef:          ['receiver', 'message', 'params', 'body'],
+  AstDef:          ['message', 'params', 'body'],
   AstAssign:       ['lhs', 'rhs'],
   AstInstanceVar:  ['name'],
   AstLocalVar:     ['name'],
@@ -15,6 +15,7 @@ const AST_SIGNATURES = {
   AstImport:       ['name', 'location'],
   AstCrntInstance: [],
   AstReturn:       ['value'],
+  AstSelected:     ['ast'],
 }
 
 const Ast = {}
@@ -24,7 +25,10 @@ for (let className in AST_SIGNATURES) {
   let childNames = AST_SIGNATURES[className]
   Ast[className] = function() {
     const ast = new Array(...arguments)
-    ast.type = className
+    ast.type  = className
+    ast.dup   = function() {
+      return Ast[className](...this)
+    }
     childNames.forEach((childName, i) => {
       Object.defineProperty(
         ast,
@@ -55,7 +59,6 @@ export let exampleAst = Ast.AstBegin(
             Ast.AstCall(null, 'attr_reader', [Ast.AstSymbol('exitstatus')]),
             Ast.AstCall(null, 'attr_reader', [Ast.AstSymbol('timeout_seconds')]),
             Ast.AstDef(
-              null,
               'initialize',
               ["next_observer"],
               Ast.AstAssign(
@@ -64,7 +67,6 @@ export let exampleAst = Ast.AstBegin(
               ),
             ),
             Ast.AstDef(
-              null,
               "call",
               ["event"],
               Ast.AstBegin(
