@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import Ast from './Ast.js'
-import './ruby_syntax.css';
+import './syntax_ruby.css'
 
 class Kw extends Component {
   render() {
@@ -16,10 +16,6 @@ class Chunk extends Component {
 class RenderRuby extends Component {
   className(ast, classes) {
     return [...classes, 'Ast', ast.type.slice(3)].join(" ")
-  }
-
-  keyword(kw) {
-    return <span class="keyword">{kw}</span>
   }
 
   render() {

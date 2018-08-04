@@ -1,6 +1,9 @@
 .Ruby {
-  margin: 1em;
-  font-family: monospace;
+  margin:           1em;
+  font-family:      monospace;
+  display:          block;
+  padding:          1em;
+  background-color: #FEE;
 }
 
 .Ruby .Ast {
