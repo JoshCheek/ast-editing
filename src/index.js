@@ -50,10 +50,9 @@ class Ruby extends Component {
   }
 
   renderAstCall(ast, classes, key) {
-    const [receiverClass, messageClass, argsClass] = ast.childClasses
-    const receiver = ast.receiver ? this.renderAst(ast.receiver, [receiverClass], 0) : null
-    const message  = <span className={messageClass}>{ast.message}</span>
-    const args     = <span className={argsClass}>
+    const receiver = ast.receiver ? this.renderAst(ast.receiver, ['receiver'], 0) : null
+    const message  = <span className="messageClass">{ast.message}</span>
+    const args     = <span className="args">
       {ast.args.map((arg, i) => this.renderAst(arg, [], i))}
     </span>
     return <span className={this.className(ast, classes)} key={key}>
@@ -61,10 +60,9 @@ class Ruby extends Component {
     </span>
   }
   renderAstClass(ast, classes, key) {
-    const [constantClass, superclassClass, bodyClass] = ast.childClasses
-    const constant   = this.renderAst(ast.constant,   [constantClass],   0)
-    const superclass = this.renderAst(ast.superclass, [superclassClass], 1)
-    const body       = this.renderAst(ast.body,       [bodyClass],       2)
+    const constant   = this.renderAst(ast.constant,   ['constant'],   0)
+    const superclass = this.renderAst(ast.superclass, ['superclass'], 1)
+    const body       = this.renderAst(ast.body,       ['body'],       2)
     return <div className={this.className(ast, classes)} key={key}>
       <Line>
         <Keyword kw="class" />{constant}{superclass ? [" < ", superclass] : ""}
@@ -76,9 +74,8 @@ class Ruby extends Component {
     </div>
   }
   renderAstModule(ast, classes, key) {
-    const [constantClass, bodyClass] = ast.childClasses
-    const constant   = this.renderAst(ast.constant,   [constantClass],   0)
-    const body       = this.renderAst(ast.body,       [bodyClass],       2)
+    const constant = this.renderAst(ast.constant, ['constant'], 0)
+    const body     = this.renderAst(ast.body,     ['body'],     2)
     return <div className={this.className(ast, classes)} key={key}>
       <Line><Keyword kw="module" />{constant}</Line>
         {body}
@@ -86,9 +83,8 @@ class Ruby extends Component {
     </div>
   }
   renderAstConstant(ast, classes, key) {
-    const [nsClass, nameClass] = ast.childClasses
-    const ns   = ast.namespace ? this.renderAst(ast.namespace, [nsClass], 0) : null
-    const name = this.renderAst(ast.name, [nameClass], 1)
+    const ns   = ast.namespace ? this.renderAst(ast.namespace, ['namespace'], 0) : null
+    const name = this.renderAst(ast.name, ['name'], 1)
     return <span className={this.className(ast, classes)} key={key}>
       {ns}{ns?"::":""}{name}
     </span>
@@ -97,8 +93,7 @@ class Ruby extends Component {
     if(ast.receiver)
       throw new Error("FIXME: Haven't implemented method definition receivers")
 
-    const [_receiverClass, messageClass, paramsClass, bodyClass] = ast.childClasses
-    const message = this.renderAst(ast.message, [messageClass], 1)
+    const message = this.renderAst(ast.message, ['message'], 1)
     let   params  = []
     ast.params.forEach((param, i) => {
       params.push(this.renderAst(param, [], i))
@@ -110,23 +105,22 @@ class Ruby extends Component {
     return <span className={this.className(ast, classes)} key={key}>
       <Line>
         <Keyword kw="def" />
-        <span className={messageClass}>{message}</span>
+        <span className="message">{message}</span>
         {params.length ? '(' : ''}
-        <span className={paramsClass}>{params}</span>
+        <span className="params">{params}</span>
         {params.length ? ')' : ''}
       </Line>
-        {this.renderAst(ast.body, [bodyClass], 0)}
+        {this.renderAst(ast.body, ['body'], 0)}
       <Line><Keyword kw="end" /></Line>
     </span>
   }
 
   renderAstAssign(ast, classes, key) {
-    const [lhsClass, rhsClass] = ast.childClasses
     return <span className={this.className(ast, classes)} key={key}>
       <Line>
-        {this.renderAst(ast.lhs, [lhsClass], 0)}
+        {this.renderAst(ast.lhs, ['lhs'], 0)}
         {" = "}
-        {this.renderAst(ast.rhs, [rhsClass], 2)}
+        {this.renderAst(ast.rhs, ['rhs'], 2)}
       </Line>
     </span>
   }
@@ -143,13 +137,12 @@ class Ruby extends Component {
   }
 
   renderAstCase(ast, classes, key) {
-    const [conditionClass, whenClausesClass] = ast.childClasses
     return <span className={this.className(ast, classes)} key={key}>
       <Line>
         <Keyword kw="case" />
-        {this.renderAst(ast.condition, [conditionClass], 0)}
+        {this.renderAst(ast.condition, ['condition'], 0)}
       </Line>
-      <span className={whenClausesClass}>
+      <span className="whenClauses">
         {ast.whenClauses.map((clause, i) => this.renderAst(clause, [], i))}
       </span>
       <Line>
@@ -158,13 +151,12 @@ class Ruby extends Component {
     </span>
   }
   renderAstCaseWhen(ast, classes, key) {
-    const [conditionClass, bodyClass] = ast.childClasses
     return <span className={this.className(ast, classes)} key={key}>
       <Line>
         <Keyword kw="when" />
-        {this.renderAst(ast.condition, [conditionClass], 0)}
+        {this.renderAst(ast.condition, ['condition'], 0)}
       </Line>
-      {this.renderAst(ast.body, [bodyClass], 0)}
+      {this.renderAst(ast.body, ['body'], 0)}
     </span>
   }
 
@@ -178,7 +170,6 @@ class Ruby extends Component {
 
 class Ast {
   constructor(...children) { this.children = children }
-  get childClasses() { return new Array(this.children.length).fill("") }
 }
 class AstBegin extends Ast {
 }
@@ -190,36 +181,30 @@ class AstString extends AstLiteral {
 class AstSymbol extends AstLiteral {
 }
 class AstCall extends Ast {
-  get childClasses() { return ['receiver', 'message', 'args'] }
   get receiver()     { return this.children[0] }
   get message()      { return this.children[1] }
   get args()         { return this.children[2] }
 }
 class AstClass extends Ast {
-  get childClasses() { return ['constant', 'superclass', 'body'] }
   get constant()     { return this.children[0] }
   get superclass()   { return this.children[1] }
   get body()         { return this.children[2] }
 }
 class AstModule extends Ast {
-  get childClasses() { return ['constant', 'body'] }
   get constant()     { return this.children[0] }
   get body()         { return this.children[1] }
 }
 class AstConstant extends Ast {
-  get childClasses() { return ['namespace', 'name'] }
   get namespace()    { return this.children[0] }
   get name()         { return this.children[1] }
 }
 class AstDef extends Ast {
-  get childClasses() { return ['receiver', 'message', 'params', 'body'] }
   get receiver()     { return this.children[0] }
   get message()      { return this.children[1] }
   get params()       { return this.children[2] }
   get body()         { return this.children[3] }
 }
 class AstAssign extends Ast {
-  get childClasses() { return ['lhs', 'rhs'] }
   get lhs()          { return this.children[0] }
   get rhs()          { return this.children[1] }
 }
@@ -232,12 +217,10 @@ class AstLocalVar extends Ast {
 
 class AstCase extends Ast {
   // should technically have an ELSE clause, too, but it's not part of my example
-  get childClasses() { return ['condition', 'whenClauses'] }
   get condition()    { return this.children[0] }
   get whenClauses()  { return this.children[1] }
 }
 class AstCaseWhen extends Ast {
-  get childClasses() { return ['condition', 'body'] }
   get condition()    { return this.children[0] }
   get body()         { return this.children[1] }
 }
