@@ -4,14 +4,14 @@ import './index.css';
 import './ruby_syntax.css';
 import registerServiceWorker from './registerServiceWorker';
 
-class Keyword extends Component {
+class Kw extends Component {
   render() {
-    return <span className="keyword">{this.props.kw}</span>
+    return <span className="keyword">{this.props.children}</span>
   }
 }
-class Line extends Component {
+class Chunk extends Component {
   render() {
-    return <span className="line">{this.props.children}</span>
+    return <span className="displayBlock">{this.props.children}</span>
   }
 }
 
@@ -64,22 +64,22 @@ class Ruby extends Component {
     const superclass = this.renderAst(ast.superclass, ['superclass'], 1)
     const body       = this.renderAst(ast.body,       ['body'],       2)
     return <div className={this.className(ast, classes)} key={key}>
-      <Line>
-        <Keyword kw="class" />{constant}{superclass ? [" < ", superclass] : ""}
-      </Line>
+      <Chunk>
+        <Kw>class</Kw>{constant}{superclass ? [" < ", superclass] : ""}
+      </Chunk>
         {body}
-      <Line>
-        <Keyword kw="end" />
-      </Line>
+      <Chunk>
+        <Kw>end</Kw>
+      </Chunk>
     </div>
   }
   renderAstModule(ast, classes, key) {
     const constant = this.renderAst(ast.constant, ['constant'], 0)
     const body     = this.renderAst(ast.body,     ['body'],     2)
     return <div className={this.className(ast, classes)} key={key}>
-      <Line><Keyword kw="module" />{constant}</Line>
+      <Chunk><Kw>module</Kw>{constant}</Chunk>
         {body}
-      <Line><Keyword kw="end" /></Line>
+        <Chunk><Kw>end</Kw></Chunk>
     </div>
   }
   renderAstConstant(ast, classes, key) {
@@ -103,25 +103,25 @@ class Ruby extends Component {
       params.pop()
 
     return <span className={this.className(ast, classes)} key={key}>
-      <Line>
-        <Keyword kw="def" />
+      <Chunk>
+        <Kw>def</Kw>
         <span className="message">{message}</span>
         {params.length ? '(' : ''}
         <span className="params">{params}</span>
         {params.length ? ')' : ''}
-      </Line>
+      </Chunk>
         {this.renderAst(ast.body, ['body'], 0)}
-      <Line><Keyword kw="end" /></Line>
+        <Chunk><Kw>end</Kw></Chunk>
     </span>
   }
 
   renderAstAssign(ast, classes, key) {
     return <span className={this.className(ast, classes)} key={key}>
-      <Line>
+      <Chunk>
         {this.renderAst(ast.lhs, ['lhs'], 0)}
         {" = "}
         {this.renderAst(ast.rhs, ['rhs'], 2)}
-      </Line>
+      </Chunk>
     </span>
   }
 
@@ -138,24 +138,24 @@ class Ruby extends Component {
 
   renderAstCase(ast, classes, key) {
     return <span className={this.className(ast, classes)} key={key}>
-      <Line>
-        <Keyword kw="case" />
+      <Chunk>
+        <Kw>case</Kw>
         {this.renderAst(ast.condition, ['condition'], 0)}
-      </Line>
+      </Chunk>
       <span className="whenClauses">
         {ast.whenClauses.map((clause, i) => this.renderAst(clause, [], i))}
       </span>
-      <Line>
-        <Keyword kw="end" />
-      </Line>
+      <Chunk>
+        <Kw>end</Kw>
+      </Chunk>
     </span>
   }
   renderAstCaseWhen(ast, classes, key) {
     return <span className={this.className(ast, classes)} key={key}>
-      <Line>
-        <Keyword kw="when" />
+      <Chunk>
+        <Kw>when</Kw>
         {this.renderAst(ast.condition, ['condition'], 0)}
-      </Line>
+      </Chunk>
       {this.renderAst(ast.body, ['body'], 0)}
     </span>
   }
