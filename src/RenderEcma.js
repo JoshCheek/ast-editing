@@ -28,11 +28,14 @@ class RenderEcma extends Component {
 
   renderAst(ast, classes, key) {
     if(!ast) return null
-    if(typeof ast === 'string') return ast
+    if(typeof ast === 'string')
+      return <span className={classes.join(" ")} key={key}>
+        {ast}
+      </span>
     const handlerName = 'render'+ast.type
     if(handlerName in this)
       return this[handlerName](ast, classes, key)
-    throw new Error(`No AST handler "${handlerName}" for ${ast.type} syntax!`)
+    throw new Error(`No AST handler "${handlerName}" for ${ast.type} syntax! (ast=${ast})`)
   }
 
   renderAstBegin(ast, classes, key) {
@@ -68,7 +71,7 @@ class RenderEcma extends Component {
     const symbol = Ast.AstCall(
       Ast.AstConstant(null, 'Symbol'),
       'for',
-      [Ast.AstString(ast.value)]
+      Ast.AstArgs(Ast.AstString(ast.value))
     )
     return this.renderAst(symbol, classes, key)
   }
@@ -97,12 +100,23 @@ class RenderEcma extends Component {
 
   renderAstCall(ast, classes, key) {
     const receiver = ast.receiver ? this.renderAst(ast.receiver, ['receiver'], 0) : null
-    const message  = <span className="messageClass">{ast.message}</span>
-    const args     = <span className="args">
-      {ast.args.map((arg, i) => this.renderAst(arg, [], i))}
-    </span>
+    const message  = this.renderAst(ast.message, [], 1)
+    const args     = this.renderAst(ast.args, [], 2)
     return <span className={this.className(ast, classes)} key={key}>
       {receiver}{receiver ? "." : null}{message}({args})
+    </span>
+  }
+
+  renderAstArgs(ast, classes, key) {
+    const args = []
+    ast.forEach((param, i) => {
+      args.push(this.renderAst(param, [], i))
+      args.push(", ")
+    })
+    if(args[args.length-1] === ", ")
+      args.pop()
+    return <span className={this.className(ast, ['args', ...classes])} key={key}>
+      {args}
     </span>
   }
 

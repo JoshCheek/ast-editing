@@ -3,6 +3,7 @@ const AST_SIGNATURES = {
   AstString:       ['value'],
   AstSymbol:       ['value'],
   AstCall:         ['receiver', 'message', 'args'],
+  AstArgs:         [],
   AstClass:        ['constant', 'superclass', 'body'],
   AstModule:       ['constant', 'body'],
   AstConstant:     ['namespace', 'name'],
@@ -57,8 +58,8 @@ export let exampleAst = Ast.AstBegin(
           Ast.AstConstant(null, 'RecordExitEvents'),
           null,
           Ast.AstBegin(
-            Ast.AstCall(null, 'attr_reader', [Ast.AstSymbol('exitstatus')]),
-            Ast.AstCall(null, 'attr_reader', [Ast.AstSymbol('timeout_seconds')]),
+            Ast.AstCall(null, 'attr_reader', Ast.AstArgs(Ast.AstSymbol('exitstatus'))),
+            Ast.AstCall(null, 'attr_reader', Ast.AstArgs(Ast.AstSymbol('timeout_seconds'))),
             Ast.AstDef(
               'initialize',
               Ast.AstParams('next_observer'),
@@ -77,14 +78,14 @@ export let exampleAst = Ast.AstBegin(
                       Ast.AstConstant(Ast.AstConstant(null, 'Events'), 'ExitStatus'),
                       Ast.AstAssign(
                         Ast.AstInstanceVar('exitstatus'),
-                        Ast.AstCall(Ast.AstLocalVar('event'), 'value', []),
+                        Ast.AstCall(Ast.AstLocalVar('event'), 'value', Ast.AstArgs()),
                       )
                     ),
                     Ast.AstCaseWhen(
                       Ast.AstConstant(Ast.AstConstant(null, 'Events'), 'Timeout'),
                       Ast.AstAssign(
                         Ast.AstInstanceVar('timeout_seconds'),
-                        Ast.AstCall(Ast.AstLocalVar('event'), 'seconds', [])
+                        Ast.AstCall(Ast.AstLocalVar('event'), 'seconds', Ast.AstArgs())
                       ),
                     ),
                   ]
@@ -93,7 +94,7 @@ export let exampleAst = Ast.AstBegin(
                   Ast.AstCall(
                     Ast.AstInstanceVar('next_observer'),
                     'call',
-                    [Ast.AstLocalVar('event')]
+                    Ast.AstArgs(Ast.AstLocalVar('event'))
                   )
                 ),
               ),
