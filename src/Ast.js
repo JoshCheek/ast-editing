@@ -12,6 +12,7 @@ const AST_SIGNATURES = {
   AstLocalVar:    ['name'],
   AstCase:        ['condition', 'whenClauses'], // should technically have an ELSE clause, too, but it's not part of my example
   AstCaseWhen:    ['condition', 'body'],
+  AstImport:      ['name', 'location'],
 }
 
 const Ast = {}
@@ -34,10 +35,9 @@ for (let className in AST_SIGNATURES) {
 }
 
 export let exampleAst = Ast.AstBegin(
-  Ast.AstCall(
-    null,
-    "require",
-    [new Ast.AstString("seeing_is_believing/event_stream/events")]
+  Ast.AstImport(
+    Ast.AstConstant(null, 'Events'),
+    Ast.AstString("seeing_is_believing/event_stream/events")
   ),
   Ast.AstClass(
     Ast.AstConstant(null, "SeeingIsBelieving"),
