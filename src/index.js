@@ -49,6 +49,8 @@ function applyCommand({ast, selectedAst, position}, command) {
         position[index] = position[index]+1
       }
       break
+    default:
+      // noop
   }
   position    = boundPosition(ast, position)
   selectedAst = selectPosition(ast, position)
@@ -84,6 +86,8 @@ const onKeyPress = function(event) {
     case 'k':
       state = applyCommand(state, commands.up)
       break;
+    default:
+      // noop
   }
   window.state = state
   renderUpdate()
