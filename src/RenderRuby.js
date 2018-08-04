@@ -116,8 +116,10 @@ class RenderRuby extends Component {
         <span className="params">{params}</span>
         {params.length ? ')' : ''}
       </Chunk>
-        {this.renderAst(ast.body, ['body'], 0)}
-        <Chunk><Kw>end</Kw></Chunk>
+      {this.renderAst(ast.body, ['body'], 0)}
+      <Chunk>
+        <Kw>end</Kw>
+      </Chunk>
     </span>
   }
 
