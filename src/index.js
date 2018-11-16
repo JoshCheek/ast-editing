@@ -7,12 +7,21 @@ import registerServiceWorker from './registerServiceWorker'
 import Ast, {exampleAst} from './Ast.js'
 
 const commands = {
-  in:   'in',
-  out:  'out',
-  down: 'down',
-  up:   'up',
-  noop: 'noop',
+  noop:   'noop',
+  in:     'in',
+  out:    'out',
+  down:   'down',
+  up:     'up',
+  append: 'append',
 }
+
+function getAst(ast, pos) {
+  if(!pos.length)
+    return ast
+  const [index, ...nextPos] = pos
+  return getAst(ast[index], nextPos)
+}
+window.getAst = getAst
 
 function boundPosition(ast, position) {
   if(!position.length)
@@ -27,6 +36,19 @@ function boundPosition(ast, position) {
   position = boundPosition(ast[crnt], rest)
   position.unshift(crnt)
   return position
+}
+
+function isAppendable(type) {
+  return type === 'AstParams'
+}
+
+function deriveAst(ast, position, cb) {
+  if (!position.length)
+    return cb(ast)
+  const [crnt, ...nextPosition] = position
+  const newAst = ast.dup()
+  newAst[crnt] = deriveAst(newAst[crnt], nextPosition, cb)
+  return newAst
 }
 
 function applyCommand({ast, selectedAst, position}, command) {
@@ -50,6 +72,17 @@ function applyCommand({ast, selectedAst, position}, command) {
         position[index] = position[index]+1
       }
       break
+    case commands.append:
+      ast = deriveAst(ast, position, crnt => {
+        if (isAppendable(crnt.type)) {
+          const derivedAst = crnt.dup()
+          derivedAst.push('')
+          return derivedAst
+        }
+      })
+      const params = getAst(ast, position)
+      position.push(params.length-1)
+      break
     case commands.noop:
       // noop
       break
@@ -71,7 +104,7 @@ function selectPosition(ast, position) {
 }
 
 
-let state = {ast: exampleAst, position: [1, 2, 1, 1, 2, 2, 0]}
+let state = {ast: exampleAst, position: [1, 2, 1, 1, 2, 3, 1]}
 state.selectedAst = state.ast
 state = applyCommand(state, commands.noop)
 window.state = state
@@ -89,6 +122,9 @@ const onKeyPress = function(event) {
       break;
     case 'k':
       state = applyCommand(state, commands.up)
+      break;
+    case 'a':
+      state = applyCommand(state, commands.append)
       break;
     default:
       // noop
