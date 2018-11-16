@@ -75,13 +75,12 @@ function applyCommand({ast, selectedAst, position}, command) {
     case commands.append:
       ast = deriveAst(ast, position, crnt => {
         if (isAppendable(crnt.type)) {
+          position.push(crnt.length)
           const derivedAst = crnt.dup()
           derivedAst.push('')
           return derivedAst
         }
       })
-      const params = getAst(ast, position)
-      position.push(params.length-1)
       break
     case commands.noop:
       // noop
